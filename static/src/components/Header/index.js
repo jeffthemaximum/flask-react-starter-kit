@@ -26,25 +26,37 @@ function mapDispatchToProps(dispatch) {
 export class Header extends Component {
     constructor(props) {
         super(props);
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
         this.state = {
             open: false,
         };
 
     }
 
-    dispatchNewRoute(route) {
-        browserHistory.push(route);
-        this.setState({
-            open: false,
-        });
+    componentDidMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
 
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+    }
+
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
+
+    dispatchNewRoute(route) {
+        window.location.href = route
     }
 
 
-    handleClickOutside() {
-        this.setState({
-            open: false,
-        });
+    handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+            this.setState({
+                open: false,
+            });
+        }
     }
 
 
@@ -64,7 +76,7 @@ export class Header extends Component {
 
     render() {
         return (
-            <header>
+            <header ref={this.setWrapperRef}>
                 <LeftNav open={this.state.open}>
                     {
                         !this.props.isAuthenticated ?

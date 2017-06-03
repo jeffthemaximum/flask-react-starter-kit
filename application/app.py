@@ -1,18 +1,28 @@
-from flask import request, render_template, jsonify, url_for, redirect, g
+from flask import request, render_template, jsonify, url_for, redirect, g, render_template_string
 from .models import User
 from index import app, db
 from sqlalchemy.exc import IntegrityError
 from .utils.auth import generate_token, requires_auth, verify_token
+import json
 
+REACT_COMPONENT_TEMPLATE = "<div data-react-props='{{props}}' data-react-class={{ name }}></div>"
+
+@app.template_global()
+def react_component(name, props = {}):
+    return render_template_string(REACT_COMPONENT_TEMPLATE, name=name, props=json.dumps(props))
+
+@app.route('/chris', methods=['GET'])
+def chris():
+    return render_template('chris.html')
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
 
-@app.route('/<path:path>', methods=['GET'])
-def any_root_path(path):
-    return render_template('index.html')
+# @app.route('/<path:path>', methods=['GET'])
+# def any_root_path(path):
+#     return render_template('index.html')
 
 
 @app.route("/api/user", methods=["GET"])
